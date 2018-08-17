@@ -6,9 +6,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
-import com.arctouch.codechallenge.Interfaces.IHomePresenter;
-import com.arctouch.codechallenge.Interfaces.IHomeView;
+import com.arctouch.codechallenge.MVPInterfaces.IHomePresenter;
+import com.arctouch.codechallenge.MVPInterfaces.IHomeView;
 import com.arctouch.codechallenge.Presenter.HomePresenter;
 import com.arctouch.codechallenge.R;
 import com.arctouch.codechallenge.model.Movie;
@@ -31,7 +32,6 @@ public class HomeActivity extends AppCompatActivity implements IHomeView {
         setContentView(R.layout.home_activity);
         presenter = new HomePresenter(this);
         presenter.onCreate();
-
     }
 
     /**
@@ -48,7 +48,7 @@ public class HomeActivity extends AppCompatActivity implements IHomeView {
      */
     @Override
     public void setHomeAdapter(List<Movie> movies) {
-        recyclerView.setAdapter(new HomeAdapter(movies));
+        recyclerView.setAdapter(new HomeAdapter(movies, presenter));
     }
 
     /**
@@ -61,5 +61,15 @@ public class HomeActivity extends AppCompatActivity implements IHomeView {
         } else {
             progressBar.setVisibility(View.GONE);
         }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void showDetailsFragment(Movie movie) {
+        //TODO: implements show details fragment.
+        Toast.makeText(getApplicationContext(), "The movie clicked was " + movie.title.toString(), Toast.LENGTH_SHORT).show();
+
     }
 }

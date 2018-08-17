@@ -1,7 +1,7 @@
 package com.arctouch.codechallenge.Presenter;
 
-import com.arctouch.codechallenge.Interfaces.IHomePresenter;
-import com.arctouch.codechallenge.Interfaces.IHomeView;
+import com.arctouch.codechallenge.MVPInterfaces.IHomePresenter;
+import com.arctouch.codechallenge.MVPInterfaces.IHomeView;
 import com.arctouch.codechallenge.api.TmdbApi;
 import com.arctouch.codechallenge.data.Cache;
 import com.arctouch.codechallenge.model.Genre;
@@ -49,6 +49,14 @@ public class HomePresenter implements IHomePresenter {
         setupApiConfig();
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void onMovieClick(Movie movie) {
+        view.showDetailsFragment(movie);
+    }
+
     private void setupApiConfig() {
         api.genres(TmdbApi.API_KEY, TmdbApi.DEFAULT_LANGUAGE)
                 .subscribeOn(Schedulers.io())
@@ -73,4 +81,5 @@ public class HomePresenter implements IHomePresenter {
                     view.setProgressVisibility(false);
                 });
     }
+
 }

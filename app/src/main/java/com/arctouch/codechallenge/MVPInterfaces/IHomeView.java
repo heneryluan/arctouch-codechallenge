@@ -1,4 +1,4 @@
-package com.arctouch.codechallenge.Interfaces;
+package com.arctouch.codechallenge.MVPInterfaces;
 
 import com.arctouch.codechallenge.model.Movie;
 
@@ -27,5 +27,12 @@ public interface IHomeView {
      * @param visibility
      */
     void setProgressVisibility(boolean visibility);
+
+    /**
+     * Shows the details fragment on activity.
+     *
+     * @param movie
+     */
+    void showDetailsFragment(Movie movie);
 
 }

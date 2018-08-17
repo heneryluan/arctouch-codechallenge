@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.arctouch.codechallenge.MVPInterfaces.IHomePresenter;
 import com.arctouch.codechallenge.R;
 import com.arctouch.codechallenge.model.Movie;
 import com.arctouch.codechallenge.util.MovieImageUrlBuilder;
@@ -17,12 +18,24 @@ import com.bumptech.glide.request.RequestOptions;
 
 import java.util.List;
 
+/**
+ * The {@link HomeActivity} recycle view adapter.
+ */
 public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.ViewHolder> {
 
-    private List<Movie> movies;
+    private final List<Movie> movies;
 
-    public HomeAdapter(List<Movie> movies) {
+    private final IHomePresenter presenter;
+
+    /**
+     * HomeAdapter constructor that inject dependencies to a list of movies and a presenter interface.
+     *
+     * @param movies
+     * @param presenter
+     */
+    public HomeAdapter(List<Movie> movies, IHomePresenter presenter) {
         this.movies = movies;
+        this.presenter = presenter;
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
@@ -42,7 +55,7 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.ViewHolder> {
             posterImageView = itemView.findViewById(R.id.posterImageView);
         }
 
-        public void bind(Movie movie) {
+        public void bind(final Movie movie, final IHomePresenter presenter) {
             titleTextView.setText(movie.title);
             genresTextView.setText(TextUtils.join(", ", movie.genres));
             releaseDateTextView.setText(movie.releaseDate);
@@ -54,6 +67,10 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.ViewHolder> {
                         .apply(new RequestOptions().placeholder(R.drawable.ic_image_placeholder))
                         .into(posterImageView);
             }
+
+            itemView.setOnClickListener((View v) -> {
+                presenter.onMovieClick(movie);
+            });
         }
     }
 
@@ -71,6 +88,7 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.ViewHolder> {
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        holder.bind(movies.get(position));
+        holder.bind(movies.get(position), presenter);
     }
+
 }
