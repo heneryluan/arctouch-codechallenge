@@ -2,23 +2,25 @@ package com.arctouch.codechallenge.home;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.ProgressBar;
 
+import com.arctouch.codechallenge.Interfaces.IHomePresenter;
+import com.arctouch.codechallenge.Interfaces.IHomeView;
+import com.arctouch.codechallenge.Presenter.HomePresenter;
 import com.arctouch.codechallenge.R;
-import com.arctouch.codechallenge.api.TmdbApi;
-import com.arctouch.codechallenge.base.BaseActivity;
-import com.arctouch.codechallenge.data.Cache;
-import com.arctouch.codechallenge.model.Genre;
 import com.arctouch.codechallenge.model.Movie;
 
-import java.util.ArrayList;
+import java.util.List;
 
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.schedulers.Schedulers;
+public class HomeActivity extends AppCompatActivity implements IHomeView {
 
-public class HomeActivity extends BaseActivity {
+    /**
+     * Presenter instance used for retain view logic.
+     */
+    private IHomePresenter presenter;
 
     private RecyclerView recyclerView;
     private ProgressBar progressBar;
@@ -27,25 +29,37 @@ public class HomeActivity extends BaseActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.home_activity);
+        presenter = new HomePresenter(this);
+        presenter.onCreate();
 
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void bindAllViews() {
         this.recyclerView = findViewById(R.id.recyclerView);
         this.progressBar = findViewById(R.id.progressBar);
+    }
 
-        api.upcomingMovies(TmdbApi.API_KEY, TmdbApi.DEFAULT_LANGUAGE, 1L, TmdbApi.DEFAULT_REGION)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(response -> {
-                    for (Movie movie : response.results) {
-                        movie.genres = new ArrayList<>();
-                        for (Genre genre : Cache.getGenres()) {
-                            if (movie.genreIds.contains(genre.id)) {
-                                movie.genres.add(genre);
-                            }
-                        }
-                    }
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void setHomeAdapter(List<Movie> movies) {
+        recyclerView.setAdapter(new HomeAdapter(movies));
+    }
 
-                    recyclerView.setAdapter(new HomeAdapter(response.results));
-                    progressBar.setVisibility(View.GONE);
-                });
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void setProgressVisibility(boolean visibility) {
+        if (visibility == true) {
+            progressBar.setVisibility(View.VISIBLE);
+        } else {
+            progressBar.setVisibility(View.GONE);
+        }
     }
 }
