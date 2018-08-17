@@ -2,6 +2,7 @@ package com.arctouch.codechallenge.home;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
@@ -70,6 +71,9 @@ public class HomeActivity extends AppCompatActivity implements IHomeView {
     public void showDetailsFragment(Movie movie) {
         //TODO: implements show details fragment.
         Toast.makeText(getApplicationContext(), "The movie clicked was " + movie.title.toString(), Toast.LENGTH_SHORT).show();
-
+        FragmentManager fm = getSupportFragmentManager();
+        DetailsDialogFragment detailsDialogFragment = DetailsDialogFragment.newInstance("Movie Details", movie);
+        detailsDialogFragment.show(fm, "fragment_details");
     }
+
 }
