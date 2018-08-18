@@ -7,7 +7,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.ProgressBar;
-import android.widget.Toast;
 
 import com.arctouch.codechallenge.MVPInterfaces.IHomePresenter;
 import com.arctouch.codechallenge.MVPInterfaces.IHomeView;
@@ -18,6 +17,10 @@ import com.arctouch.codechallenge.model.Movie;
 import java.util.List;
 
 public class HomeActivity extends AppCompatActivity implements IHomeView {
+
+    private static final String MOVIE_DETAILS_KEY = "Movie Details";
+    private static final String FRAGMENT_DETAILS_KEY = "fragment_details";
+
 
     /**
      * Presenter instance used for retain view logic.
@@ -69,11 +72,9 @@ public class HomeActivity extends AppCompatActivity implements IHomeView {
      */
     @Override
     public void showDetailsFragment(Movie movie) {
-        //TODO: implements show details fragment.
-        Toast.makeText(getApplicationContext(), "The movie clicked was " + movie.title.toString(), Toast.LENGTH_SHORT).show();
         FragmentManager fm = getSupportFragmentManager();
-        DetailsDialogFragment detailsDialogFragment = DetailsDialogFragment.newInstance("Movie Details", movie);
-        detailsDialogFragment.show(fm, "fragment_details");
+        DetailsDialogFragment detailsDialogFragment = DetailsDialogFragment.newInstance(MOVIE_DETAILS_KEY, movie);
+        detailsDialogFragment.show(fm, FRAGMENT_DETAILS_KEY);
     }
 
 }
