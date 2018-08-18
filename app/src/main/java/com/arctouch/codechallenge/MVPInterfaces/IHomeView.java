@@ -10,9 +10,14 @@ import java.util.List;
 public interface IHomeView {
 
     /**
-     * Notify activity to bind all
+     * Notify activity to bind all views.
      */
     void bindAllViews();
+
+    /**
+     *  Notify activity to set all listeners.
+     */
+    void setAllListeners();
 
     /**
      * Sets the home adapter on activity.
@@ -34,5 +39,12 @@ public interface IHomeView {
      * @param movie
      */
     void showDetailsFragment(Movie movie);
+
+    /**
+     * Notify when the view dataset is changed.
+     *
+     * @param movies
+     */
+    void notifyDataSetChanged(List<Movie> movies);
 
 }

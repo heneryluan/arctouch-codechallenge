@@ -4,7 +4,9 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 import android.widget.ProgressBar;
 
@@ -20,7 +22,6 @@ public class HomeActivity extends AppCompatActivity implements IHomeView {
 
     private static final String MOVIE_DETAILS_KEY = "Movie Details";
     private static final String FRAGMENT_DETAILS_KEY = "fragment_details";
-
 
     /**
      * Presenter instance used for retain view logic.
@@ -45,6 +46,35 @@ public class HomeActivity extends AppCompatActivity implements IHomeView {
     public void bindAllViews() {
         this.recyclerView = findViewById(R.id.recyclerView);
         this.progressBar = findViewById(R.id.progressBar);
+    }
+
+    @Override
+    public void setAllListeners() {
+
+        LinearLayoutManager mLayoutManager;
+        mLayoutManager = new LinearLayoutManager(this);
+        recyclerView.setLayoutManager(mLayoutManager);
+
+        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+
+                if (dy > 0) //check for scroll down
+                {
+                    int visibleItemCount = mLayoutManager.getChildCount();
+                    int totalItemCount = mLayoutManager.getItemCount();
+                    int pastVisiblesItems = mLayoutManager.findFirstVisibleItemPosition();
+
+                    if (presenter.isRecycleLoading()) {
+                        if ((visibleItemCount + pastVisiblesItems) >= totalItemCount) {
+                            Log.v("...", "Last Item Wow !");
+                            presenter.onRecycleEndScrolled();
+                        }
+                    }
+                }
+            }
+        });
     }
 
     /**
@@ -75,6 +105,11 @@ public class HomeActivity extends AppCompatActivity implements IHomeView {
         FragmentManager fm = getSupportFragmentManager();
         DetailsDialogFragment detailsDialogFragment = DetailsDialogFragment.newInstance(MOVIE_DETAILS_KEY, movie);
         detailsDialogFragment.show(fm, FRAGMENT_DETAILS_KEY);
+    }
+
+    @Override
+    public void notifyDataSetChanged(List<Movie> movies) {
+        recyclerView.getAdapter().notifyDataSetChanged();
     }
 
 }

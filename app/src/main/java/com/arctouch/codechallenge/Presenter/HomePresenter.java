@@ -8,6 +8,7 @@ import com.arctouch.codechallenge.model.Genre;
 import com.arctouch.codechallenge.model.Movie;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
@@ -21,6 +22,11 @@ import retrofit2.converter.moshi.MoshiConverterFactory;
  */
 public class HomePresenter implements IHomePresenter {
 
+    private static final long FIRST_PAGE = 1L;
+    private static long currentPage;
+
+    private boolean isRecycleLoading = true;
+
     protected TmdbApi api = new Retrofit.Builder()
             .baseUrl(TmdbApi.URL)
             .client(new OkHttpClient.Builder().build())
@@ -30,6 +36,8 @@ public class HomePresenter implements IHomePresenter {
             .create(TmdbApi.class);
 
     private IHomeView view;
+
+    private List<Movie> movies;
 
     /**
      * HomePresenter constructor injecting a {@link IHomeView} interface contract.
@@ -46,6 +54,7 @@ public class HomePresenter implements IHomePresenter {
     @Override
     public void onCreate() {
         view.bindAllViews();
+        view.setAllListeners();
         setupApiConfig();
     }
 
@@ -57,6 +66,24 @@ public class HomePresenter implements IHomePresenter {
         view.showDetailsFragment(movie);
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean isRecycleLoading() {
+        return isRecycleLoading;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void onRecycleEndScrolled() {
+        isRecycleLoading = false;
+        currentPage++;
+        requestMoreItems();
+    }
+
     private void setupApiConfig() {
         api.genres(TmdbApi.API_KEY, TmdbApi.DEFAULT_LANGUAGE)
                 .subscribeOn(Schedulers.io())
@@ -65,21 +92,48 @@ public class HomePresenter implements IHomePresenter {
                     Cache.setGenres(response.genres);
                 });
 
-        api.upcomingMovies(TmdbApi.API_KEY, TmdbApi.DEFAULT_LANGUAGE, 1L, TmdbApi.DEFAULT_REGION)
+        currentPage = FIRST_PAGE;
+        api.upcomingMovies(TmdbApi.API_KEY, TmdbApi.DEFAULT_LANGUAGE, FIRST_PAGE, TmdbApi.DEFAULT_REGION)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(response -> {
-                    for (Movie movie : response.results) {
-                        movie.genres = new ArrayList<>();
-                        for (Genre genre : Cache.getGenres()) {
-                            if (movie.genreIds.contains(genre.id)) {
-                                movie.genres.add(genre);
+                    if (!response.results.isEmpty()) {
+                        for (Movie movie : response.results) {
+                            movie.genres = new ArrayList<>();
+                            for (Genre genre : Cache.getGenres()) {
+                                if (movie.genreIds.contains(genre.id)) {
+                                    movie.genres.add(genre);
+                                }
                             }
                         }
+                        movies = response.results;
+                        view.setHomeAdapter(movies);
+                        view.setProgressVisibility(false);
                     }
-                    view.setHomeAdapter(response.results);
-                    view.setProgressVisibility(false);
                 });
+
+    }
+
+    private void requestMoreItems() {
+        api.upcomingMovies(TmdbApi.API_KEY, TmdbApi.DEFAULT_LANGUAGE, currentPage, TmdbApi.DEFAULT_REGION)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(response -> {
+                    if (!response.results.isEmpty()) {
+                        for (Movie movie : response.results) {
+                            movie.genres = new ArrayList<>();
+                            for (Genre genre : Cache.getGenres()) {
+                                if (movie.genreIds.contains(genre.id)) {
+                                    movie.genres.add(genre);
+                                }
+                            }
+                        }
+                        isRecycleLoading = true;
+                        movies.addAll(response.results);
+                        view.notifyDataSetChanged(movies);
+                    }
+                });
+
     }
 
 }

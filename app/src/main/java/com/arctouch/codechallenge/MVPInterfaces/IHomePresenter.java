@@ -19,4 +19,16 @@ public interface IHomePresenter {
      */
     void onMovieClick(Movie movie);
 
+    /**
+     * Verify if recycle view is loading.
+     *
+     * @return {@link boolean}
+     */
+    boolean isRecycleLoading();
+
+    /**
+     * Call onRecycleEndScrolled method on Presenter.
+     */
+    void onRecycleEndScrolled();
+
 }
