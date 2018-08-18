@@ -15,7 +15,7 @@ public interface IHomeView {
     void bindAllViews();
 
     /**
-     *  Notify activity to set all listeners.
+     * Notify activity to set all listeners.
      */
     void setAllListeners();
 

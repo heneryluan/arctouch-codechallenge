@@ -48,6 +48,9 @@ public class HomeActivity extends AppCompatActivity implements IHomeView {
         this.progressBar = findViewById(R.id.progressBar);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void setAllListeners() {
 
@@ -107,6 +110,9 @@ public class HomeActivity extends AppCompatActivity implements IHomeView {
         detailsDialogFragment.show(fm, FRAGMENT_DETAILS_KEY);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void notifyDataSetChanged(List<Movie> movies) {
         recyclerView.getAdapter().notifyDataSetChanged();

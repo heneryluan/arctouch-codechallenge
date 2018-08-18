@@ -93,7 +93,7 @@ public class DetailsDialogFragment extends DialogFragment {
 
         String posterPath = getArguments().getString(POSTER_PATH_KEY, UNKNOWN);
         if (TextUtils.isEmpty(posterPath) == false) {
-            Glide.with(posterImageView)
+            Glide.with(posterImageView.getRootView())
                     .load(movieImageUrlBuilder.buildPosterUrl(posterPath))
                     .apply(new RequestOptions().placeholder(R.drawable.ic_image_placeholder))
                     .into(posterImageView);
@@ -101,7 +101,7 @@ public class DetailsDialogFragment extends DialogFragment {
 
         String backdropPath = getArguments().getString(BACKDROP_PATH_KEY, UNKNOWN);
         if (TextUtils.isEmpty(backdropPath) == false) {
-            Glide.with(backdropImageView)
+            Glide.with(backdropImageView.getRootView())
                     .load(movieImageUrlBuilder.buildPosterUrl(backdropPath))
                     .apply(new RequestOptions().placeholder(R.color.colorPrimaryDark))
                     .into(backdropImageView);
